@@ -56,6 +56,7 @@ import javax.swing.JPanel;
  * B.. : between 0.1 and 10: 7.525%
  * 
  * TODO: 
+ * - Display error messages and other status messages in GUI
  * - make it so each java.Folderinfo knows its quantity-percentage too (it already knows its size-percentage)
  * 		(this means we have to count somewhere how many files there are in total (empty folders count too. I
  * 		mean "leaves" of the tree). Probably same place we count total size.)
@@ -129,12 +130,8 @@ public class Folderscale {
         F.setSize(400, 300);
         F.setLayout(new BorderLayout());
 
-        // Oben das Label:
-        //F.add("North",new JLabel("Farbenspiel"));
-        // Im Zentrum die Farben:
         say("rein in ScaleCanvas", 5);
-        myCanvas = new ScaleCanvas(thisFolder); //TODO: initialize thisFolder before this line and see if that makes it show up immediately
-        //inputShape();
+        myCanvas = new ScaleCanvas(thisFolder);
 
         // Oben die Kn�pfe:
         JPanel top = new JPanel(new BorderLayout());
@@ -265,7 +262,7 @@ public class Folderscale {
         File folder = new File(input);
         if (!folder.exists()) {
             say(input + " : This file doesn't exist");
-            //TODO: proper error message
+            //TODO: candidate for error message in GUI
         } else {
             long totalsize;
 
@@ -309,7 +306,7 @@ public class Folderscale {
     }
 
     protected void drawTheResult() {
-        myCanvas.thisFolder = thisFolder; //TODO: I think this is redundant. The canvas gets the folder when it's initialized.
+        myCanvas.thisFolder = thisFolder;
         F.add("Center", myCanvas);
 
         stoptime = System.currentTimeMillis();

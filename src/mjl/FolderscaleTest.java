@@ -30,10 +30,6 @@ class FolderscaleTest {
         deleteTestfolders();
     }
 
-    public static void main(String[] args) { //just useful for testing.
-        createTestfolders();
-    }
-
     public static void createTestfolders() {
         File baseFolder = new File(TEST_DIRECTORY + "\\\\" + CREATED_TEST_FOLDER);
         baseFolder.mkdir();

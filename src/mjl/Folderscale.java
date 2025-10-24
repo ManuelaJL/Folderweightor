@@ -7,10 +7,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.TextField;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
 import java.io.File;
+import java.util.Comparator;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -104,318 +102,260 @@ D:\Manuela's junke\art\Samples\books\Drizzt : instant
  * 
  */
 
-public class Folderscale
-{
-	public static ScaleCanvas myCanvas;
-	static JFrame F;
-	static TextField fieldForFolder;
-	static TextField fieldForSize;
-	static long starttime;
-	static long stoptime;
-	static int debugLevel = 1; //the higher, the more debugs
-	//0 = No debugs
-	//1 = basic framework
-	//5 = absolutely freaking everything
+public class Folderscale {
+    public static ScaleCanvas myCanvas;
+    static JFrame F;
+    static TextField fieldForFolder;
+    static TextField fieldForSize;
+    static long starttime;
+    static long stoptime;
+    static int debugLevel = 1; //the higher, the more debugs
+    //0 = No debugs
+    //1 = basic framework
+    //5 = absolutely freaking everything
 
-	static int minsize = 0; //A file/folder must be at least this big for the program to analyze/show it
-	//TODO: minsize is pretty useless right now, cause we don't know how big a folder is before we measure it.
-	public static Folderinfo thisFolder;  //a tree-like construct with names and sizes of subfolders
+    static int minsize = 0; //A file/folder must be at least this big for the program to analyze/show it
+    //TODO: minsize is pretty useless right now, cause we don't know how big a folder is before we measure it.
+    public static Folderinfo thisFolder;  //a tree-like construct with names and sizes of subfolders
 
-	public static void main (String args[]) {
-		Folderscale thisProgram = new Folderscale();
-		thisProgram.operate();
-	}
+    public static void main(String args[]) {
+        Folderscale thisProgram = new Folderscale();
+        thisProgram.operate();
+    }
 
-	private void operate() {
-		F=new JFrame();
-		F.setTitle("Folder scale");
-		F.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    private void operate() {
+        F = new JFrame();
+        F.setTitle("Folder scale");
+        F.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		starttime = System.currentTimeMillis();
+        starttime = System.currentTimeMillis();
 
-		F.setSize(400,300);
-		F.setLayout(new BorderLayout());
+        F.setSize(400, 300);
+        F.setLayout(new BorderLayout());
 
-		// Oben das Label:
-		//F.add("North",new JLabel("Farbenspiel"));
-		// Im Zentrum die Farben:
-		say("rein in ScaleCanvas", 5);
-		myCanvas = new ScaleCanvas(thisFolder); //TODO: initialize thisFolder before this line and see if that makes it show up immediately
-		//inputShape();
+        // Oben das Label:
+        //F.add("North",new JLabel("Farbenspiel"));
+        // Im Zentrum die Farben:
+        say("rein in ScaleCanvas", 5);
+        myCanvas = new ScaleCanvas(thisFolder); //TODO: initialize thisFolder before this line and see if that makes it show up immediately
+        //inputShape();
 
-		// Oben die Kn�pfe:
-		JPanel top=new JPanel(new BorderLayout());
-		JPanel topleft = new JPanel(new GridLayout(2,1));
-		JPanel topright = new JPanel();
+        // Oben die Kn�pfe:
+        JPanel top = new JPanel(new BorderLayout());
+        JPanel topleft = new JPanel(new GridLayout(2, 1));
+        JPanel topright = new JPanel();
 
-		topleft.setMinimumSize(new Dimension(800,800));
+        topleft.setMinimumSize(new Dimension(800, 800));
 
-		top.add(topleft, BorderLayout.CENTER);
-		top.add(topright, BorderLayout.EAST);
+        top.add(topleft, BorderLayout.CENTER);
+        top.add(topright, BorderLayout.EAST);
 
-		GridBagConstraints cst = new GridBagConstraints();
+        GridBagConstraints cst = new GridBagConstraints();
 
-		JPanel folderPanel = new JPanel();
-		JPanel sizePanel = new JPanel();
-		cst.gridx = 0;
-		cst.gridy = 0;
-		topleft.add(folderPanel, cst);
-		cst.gridx = 0;
-		cst.gridy = 1;
-		topleft.add(sizePanel, cst);
+        JPanel folderPanel = new JPanel();
+        JPanel sizePanel = new JPanel();
+        cst.gridx = 0;
+        cst.gridy = 0;
+        topleft.add(folderPanel, cst);
+        cst.gridx = 0;
+        cst.gridy = 1;
+        topleft.add(sizePanel, cst);
 
 
-		JLabel folderLabel = new JLabel("Enter Folder");
-		JLabel sizeLabel = new JLabel("Min size");
-		folderPanel.add(folderLabel);
-		sizePanel.add(sizeLabel);
+        JLabel folderLabel = new JLabel("Enter Folder");
+        JLabel sizeLabel = new JLabel("Min size");
+        folderPanel.add(folderLabel);
+        sizePanel.add(sizeLabel);
 
-		fieldForFolder = new TextField("D:\\", 30);
-		fieldForSize = new TextField("0", 30);
-		cst.fill = GridBagConstraints.VERTICAL;
-		cst.ipady = 30;
-		folderPanel.add(fieldForFolder,cst);
-		sizePanel.add(fieldForSize,cst);
-		//inputShape(fieldForFolder.getText(),fieldForSize.getText());
+        fieldForFolder = new TextField("D:\\", 30);
+        fieldForSize = new TextField("0", 30);
+        cst.fill = GridBagConstraints.VERTICAL;
+        cst.ipady = 30;
+        folderPanel.add(fieldForFolder, cst);
+        sizePanel.add(fieldForSize, cst);
+        //inputShape(fieldForFolder.getText(),fieldForSize.getText());
 
-		Button btn = new Button("Draw");
-		topright.add(btn);
+        Button btn = new Button("Draw");
+        topright.add(btn);
 
-		btn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			  processInput();
-			}
-		});
+        btn.addActionListener(e -> processInput());
 
 //        folderPanel.setBackground(Color.blue);
-		folderPanel.setMaximumSize(F.getMaximumSize());
+        folderPanel.setMaximumSize(F.getMaximumSize());
 
 //        sizePanel.setBackground(Color.green);
 //        topright.setBackground(Color.red);
 
-		F.add("North",top);
+        F.add("North", top);
 
-		F.setVisible(true);
-	}
-
-	public void componentResized(ComponentEvent e) { //TODO: does nothing
-		say("You resized window", 5);
-		}
-
-	/*
-	 * Common method for finding folder size, nothing else.
-	 */
-	public static long folderSize(File directory) {
-	    long length = 0;
-	    for (File file : directory.listFiles()) {
-	        if (!file.isDirectory())
-	            length += file.length();
-	        else
-	            length += folderSize(file);
-	    }
-	    return length;
-	}
-
-	/*
-	 * Similar to folderSize, but does a bit more
-	 * Fill the info of all of folder's subfolders into Folderinfos
-	 */
-	public long analyzeFolder(Folderinfo folder){
-
-		if(folder.path.listFiles()==null){ //TODO: no output in GUI, so if not debugging, won't know it was skipped. Check if the problem is that you don't have admin access.
-			System.err.println("Something doesn't work with this folder, so skipping it: " + folder.path);
-			return 0;
-		}
-
-		//thisFolder = new java.Folderinfo(folder);
-		say("java.Folderscale/analyzeFolder: " + folder.getName(), 2);
-
-		Folderinfo newguy; // = new java.Folderinfo(folder.path.getAbsoluteFile());
-
-	    long length = 0;
-	    long additionalLength = 0;
-	    if(folder==null){
-	    	System.err.println("folder is null!");
-	    }
-	    else if(folder.path==null){
-	    	System.err.println("folder.path is null!");
-	    }
-	    else if(folder.path.listFiles()==null){
-	    	System.err.println("folder.path.listFiles() is null for " + folder.path.toString());
-	    }
-	    if(folder.path.listFiles().length==0){
-	    	//say("No subfolders in " + folder.getName(), 4);
-
-	    }
-	    File[] filesInFolder = folder.path.listFiles();
-	    for (File file : filesInFolder) {
-	      if(file.getName()=="I AM YOUR GOD" || file.getName().contains("System Volume Information")
-	    	  || file.getName()=="RtBackup"  || file.getName().contains("$RECYCLE.BIN") || file.getName().contains("$Recycle.Bin")
-				  || file.getName()==("Windows Defender Advanced Threat Protection")
-				  || file.getName().contains("Lenovo\\Vantage")
-				  || file.getName().contains("ProgramData\\Microsoft")
-				  || file.getName().contains("All Users\\Microsoft")
-				  || file.getName().contains("Windows\\System")
-	    	  || file.getName().startsWith(".")) continue;
+        F.setVisible(true);
+    }
 
 
-	    	additionalLength = 0;
-	    	newguy = new Folderinfo(file.getAbsoluteFile(), debugLevel);
+    /*
+     * Similar to folderSize, but does a bit more
+     * Fill the info of all of folder's subfolders into Folderinfos
+     */
+    public long analyzeFolder(Folderinfo folder) {
+        if (folder == null) {
+            System.err.println("folder is null!");
+            return 0;
+        } else if (folder.path == null) {
+            System.err.println("folder.path is null!");
+            return 0;
+        } else if (folder.path.listFiles() == null) {
+            System.err.println("folder.path.listFiles() is null for " + folder.path.toString());
+            return 0;
+        }
+        if (folder.path.listFiles() == null) { //TODO: no output in GUI, so if not debugging, won't know it was skipped. Check if the problem is that you don't have admin access.
+            System.err.println("Something doesn't work with this folder, so skipping it: " + folder.path);
+            return 0;
+        }
 
-	        if (!file.isDirectory()){
-	        	say("This is a file", 4);
-	        	say("Length of " + folder.getName() + " was previously " + length + ", now I add " + newguy.getName() + " via analyzeFolder"
-	        			+ ", whose length is " + file.length(), 7);
-	            length += file.length();
-	        	newguy.setSize(file.length());
-	        	folder.addSubfolder(newguy);
-	        }
-	        else{
-	        	//if(folderSize(file)>=minsize){ //potentially silly, cause now we measure the size twice
-	        	  say("This is a folder", 4);
-	        	  //say("Length of " + folder.getName() + " was previously " + length + ", now I add " + newguy.getName() + " via analyzeFolder", 5);
-	        	  additionalLength = analyzeFolder(newguy); //inside, subfolders are added
-	        	  length += additionalLength;
-	              //say("Done analyzing him. Length is now " + length, 5);
-	        	  newguy.setSize(additionalLength); //TODO: mistake here
-	        	  //TODO: removed newguy.findPercentages();
-	        	  folder.addSubfolder(newguy);
-	        	//}//if foldersize>minsize
-	        }
+        //thisFolder = new java.Folderinfo(folder);
+        say("java.Folderscale/analyzeFolder: " + folder.getName(), 2);
 
-	    }
-	    //say("end of java.Folderscale/analyzeFolder. Returning length=" + length + " to folder " + folder.getName(), 3);
-	    say("==================Sorting subfolders of " + folder.getName() + ". Before sorting, they are: ", 4);
+        Folderinfo newguy; // = new java.Folderinfo(folder.path.getAbsoluteFile());
+
+        long length = 0;
+        long additionalLength;
+
+        File[] filesInFolder = folder.path.listFiles();
+        for (File file : filesInFolder) {
+            if (file.getName().equals("I AM YOUR GOD") || file.getName().contains("System Volume Information")
+                    || file.getName().equals("RtBackup") || file.getName().contains("$RECYCLE.BIN") || file.getName().contains("$Recycle.Bin")
+                    || file.getName().equals("Windows Defender Advanced Threat Protection")
+                    || file.getName().contains("Lenovo\\Vantage")
+                    || file.getName().contains("ProgramData\\Microsoft")
+                    || file.getName().contains("All Users\\Microsoft")
+                    || file.getName().contains("Windows\\System")
+                    || file.getName().startsWith(".")) continue;
+
+
+            additionalLength = 0;
+            newguy = new Folderinfo(file.getAbsoluteFile(), debugLevel);
+
+            if (!file.isDirectory()) {
+                say("This is a file", 4);
+                say("Length of " + folder.getName() + " was previously " + length + ", now I add " + newguy.getName() + " via analyzeFolder"
+                        + ", whose length is " + file.length(), 7);
+                length += file.length();
+                newguy.setSize(file.length());
+                folder.addSubfolder(newguy);
+            } else {
+                //if(folderSize(file)>=minsize){ //potentially silly, cause now we measure the size twice
+                say("This is a folder", 4);
+                //say("Length of " + folder.getName() + " was previously " + length + ", now I add " + newguy.getName() + " via analyzeFolder", 5);
+                additionalLength = analyzeFolder(newguy); //inside, subfolders are added
+                length += additionalLength;
+                //say("Done analyzing him. Length is now " + length, 5);
+                newguy.setSize(additionalLength);
+                folder.addSubfolder(newguy);
+            }
+
+        }
+        //say("end of java.Folderscale/analyzeFolder. Returning length=" + length + " to folder " + folder.getName(), 3);
+        say("==================Sorting subfolders of " + folder.getName() + ". Before sorting, they are: ", 4);
 //	    say(folder.getSubs().toString(), 4);
 
-		starttime = System.currentTimeMillis();
+        starttime = System.currentTimeMillis();
 
-	    folder.sortSubfolders();
+        folder.getSubs().sort(Comparator.comparing(Folderinfo::getSize).reversed());
 
-		stoptime = System.currentTimeMillis();
+        stoptime = System.currentTimeMillis();
 
-	    say("After sorting, they are: ", 4);
+        say("After sorting, they are: ", 4);
 //	    say(folder.getSubs().toString(), 4);
 
-	    say("Time taken to sort " + folder.getName() + ": " + (stoptime-starttime) + ".", 4);
+        say("Time taken to sort " + folder.getName() + ": " + (stoptime - starttime) + ".", 4);
 
-	    return length;
-	}
+        return length;
+    }
 
-	//To find what the paths are: File.listRoots();
-	public void processInput(){
-		say("Getting the input", 5);
-		String input = getTextFromGuiFolderfield();
-		say("Input name: " + input);
-		File folder = new File(input);
-		minsize = getTextFromGuiMinsizefield();
-		say("Minimum size: " + minsize, 3);
-		if(!folder.exists()){
-			say(input + " : This file doesn't exist");
-			//TODO: proper error message
-		}
-		else{
-		  long totalsize;
+    //To find what the paths are: File.listRoots();
+    public void processInput() {
+        say("Getting the input", 5);
+        String input = getTextFromGuiFolderfield();
+        say("Input name: " + input);
+        File folder = new File(input);
+        minsize = getTextFromGuiMinsizefield();
+        say("Minimum size: " + minsize, 3);
+        if (!folder.exists()) {
+            say(input + " : This file doesn't exist");
+            //TODO: proper error message
+        } else {
+            long totalsize;
 
-		  if(folder.isDirectory()){
-			thisFolder = new Folderinfo(folder, debugLevel);
+            if (folder.isDirectory()) {
+                thisFolder = new Folderinfo(folder, debugLevel);
 
-			stoptime = System.currentTimeMillis();
-			System.out.println("After " + (stoptime-starttime) + ", beginning to analyze Folder");
-			starttime = System.currentTimeMillis();
+                stoptime = System.currentTimeMillis();
+                System.out.println("After " + (stoptime - starttime) + ", beginning to analyze Folder");
+                starttime = System.currentTimeMillis();
 
-			thisFolder.setSize(analyzeFolder(thisFolder)); //inside, subfolders are added
+                thisFolder.setSize(analyzeFolder(thisFolder)); //inside, subfolders are added
 
-			stoptime = System.currentTimeMillis();
-			System.out.println("Done. Analyzing took " + (stoptime-starttime) + ".");
-			starttime = System.currentTimeMillis();
+                stoptime = System.currentTimeMillis();
+                System.out.println("Done. Analyzing took " + (stoptime - starttime) + ".");
+                starttime = System.currentTimeMillis();
 
 
-		  }
-		  else{ //if it's a single file, not a directory
-			totalsize = folder.length();
-			output("Size: " + totalsize);
-		  }
+            } else { //if it's a single file, not a directory
+                totalsize = folder.length();
+                output("Size: " + totalsize);
+            }
 
-		  //System.out.println("\n\n\n");
-		  //thisFolder.printThis("");
+            //System.out.println("\n\n\n");
+            //thisFolder.printThis("");
 
-		  stoptime = System.currentTimeMillis();
-		  System.out.println("Done. Analyzing took " + (stoptime-starttime) + ".");
-		  starttime = System.currentTimeMillis();
+            stoptime = System.currentTimeMillis();
+            System.out.println("Done. Analyzing took " + (stoptime - starttime) + ".");
+            starttime = System.currentTimeMillis();
 
-		  //System.out.println("Done finding sizes. Next: Percentages");
-		  thisFolder.findTotalPercentages(thisFolder.getSize());
-		  System.out.println("Done doing percentages");
+            //System.out.println("Done finding sizes. Next: Percentages");
+            thisFolder.findTotalPercentages(thisFolder.getSize());
+            System.out.println("Done doing percentages");
 
-		  stoptime = System.currentTimeMillis();
-		  System.out.println("Done with percentages. It took " + (stoptime-starttime) + ".");
-		  starttime = System.currentTimeMillis();
+            stoptime = System.currentTimeMillis();
+            System.out.println("Done with percentages. It took " + (stoptime - starttime) + ".");
+            starttime = System.currentTimeMillis();
 
-		  drawTheResult();
-		}
-		//}
-	}
+            drawTheResult();
+        }
+        //}
+    }
 
-	protected void drawTheResult() {
-		myCanvas.thisFolder = thisFolder; //TODO: I think this is redundant. The canvas gets the folder when it's initialized.
-		F.add("Center",myCanvas);
+    protected void drawTheResult() {
+        myCanvas.thisFolder = thisFolder; //TODO: I think this is redundant. The canvas gets the folder when it's initialized.
+        F.add("Center", myCanvas);
 
-		stoptime = System.currentTimeMillis();
-		System.out.println("Done drawing. That took " + (stoptime-starttime) + ".");
-		starttime = System.currentTimeMillis();
-	}
+        stoptime = System.currentTimeMillis();
+        System.out.println("Done drawing. That took " + (stoptime - starttime) + ".");
+        starttime = System.currentTimeMillis();
+    }
 
-	protected int getTextFromGuiMinsizefield() { //TODO: might be obsolete soon anyway
-		return Integer.parseInt(fieldForSize.getText());
-	}
+    protected int getTextFromGuiMinsizefield() { //TODO: might be obsolete soon anyway
+        return Integer.parseInt(fieldForSize.getText());
+    }
 
-	protected String getTextFromGuiFolderfield() {
-		return fieldForFolder.getText();
-	}
+    protected String getTextFromGuiFolderfield() {
+        return fieldForFolder.getText();
+    }
 
-	/*
-	 * Later I'll change this to a label instead of command line
-	 */
-	public static void output(String output){
-		System.out.println(output);
-	}
+    /*
+     * Later I'll change this to a label instead of command line
+     */
+    public static void output(String output) {
+        System.out.println(output);
+    }
 
-	/*
-	 * Converts a size given in bytes to a more readable String
-	 * Not used at the moment.
-	 */
-	public static String convertSize(long bytes){
-		int tempcalc = 0;
-		String result = "";
-		if(bytes>=1000000000){
-			tempcalc = (int) Math.floor(bytes/1000000000);
-			result += tempcalc + "GB ";
-			bytes -= tempcalc*1000000000;
-		}
-		if(bytes>=1048576){ //value for storage would be 10^6 1048576
-			tempcalc = (int) Math.floor(bytes/1048576);
-			result += tempcalc + "MB ";
-			bytes -= tempcalc*1048576;
-		}
-		if(bytes>=1024){
-			tempcalc = (int) Math.floor(bytes/1024);
-			result += tempcalc + "KB ";
-			bytes -= tempcalc*1024;
-		}
-		if(bytes>0){
-			result += bytes + "B";
-		}
 
-		return result;
-	}
+    public void say(String output) { //for debugging
+        say(output, 0);
+    }
 
-	public void say(String output){ //for debugging
-		say(output, 0);
-	}
-
-	public void say(String output, int minDebugLevToPrint){ //for debugging
-		if(debugLevel >= minDebugLevToPrint)
-			System.out.println(output);
-	}
+    public void say(String output, int minDebugLevToPrint) { //for debugging
+        if (debugLevel >= minDebugLevToPrint)
+            System.out.println(output);
+    }
 }

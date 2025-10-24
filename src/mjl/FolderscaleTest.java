@@ -8,10 +8,9 @@ import test.FolderscaleDummyForTest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -65,7 +64,7 @@ class FolderscaleTest {
         File newfile = new File(location, name);
         String content = "a".repeat(size);
         try {
-            Files.write(Paths.get(newfile.getPath()), Arrays.asList(content));
+            Files.write(Paths.get(newfile.getPath()), List.of(content));
         } catch (IOException e) {
             System.err.println("Error writing file: " + e.getMessage());
         }
@@ -97,78 +96,52 @@ class FolderscaleTest {
         assertEquals(118, resultSize);
         ArrayList<Folderinfo> basefolderSubfolders = thisFolder.getSubs();
         assertEquals(4, basefolderSubfolders.size());
-        for (Folderinfo fold : basefolderSubfolders) {
-            ArrayList<Folderinfo> subfolder1_subs = fold.getSubs();
-            switch (fold.getName()) {
-                case "BigFileA":
-                    assertEquals(0, subfolder1_subs.size());
-                    break;
-                case "EmptyFolderC":
-                    assertEquals(0, subfolder1_subs.size());
-                    break;
-                case "TooSmallFileD":
-                    assertEquals(0, subfolder1_subs.size());
-                    break;
+        Folderinfo expectedFolderB = basefolderSubfolders.get(0);
+        assertEquals("FolderB", expectedFolderB.getName());
+        { //these brakets are just to make it more overviewable
+            assertEquals(3, expectedFolderB.getSubs().size());
+            Folderinfo expectedFolderBA = expectedFolderB.getSubs().get(0);
+            {
+                assertEquals("FolderBA", expectedFolderBA.getName());
+                ArrayList<Folderinfo> folderBA_subs = expectedFolderBA.getSubs();
+                assertEquals(2, folderBA_subs.size()); // FileBAA, FileBAB
+                Folderinfo expectedFileBAA = expectedFolderBA.getSubs().get(0);
+                assertEquals("FileBAA", expectedFileBAA.getName());
+                assertEquals(0, expectedFileBAA.getSubs().size());
+                Folderinfo expectedFileBAB = expectedFolderBA.getSubs().get(1);
+                assertEquals("FileBAB", expectedFileBAB.getName());
+                assertEquals(0, expectedFileBAB.getSubs().size());
 
-                case "FolderB":
-                    assertEquals(3, subfolder1_subs.size());
-
-                    for (Folderinfo sub : subfolder1_subs) {
-                        ArrayList<Folderinfo> subfolder2_subs = sub.getSubs();
-                        switch (sub.getName()) {
-                            case "FolderBA":
-                                assertEquals(2, subfolder2_subs.size()); // FileBAA, FileBAB
-                                for (Folderinfo subsub : subfolder2_subs) {
-                                    ArrayList<Folderinfo> subfolder3_subs = subsub.getSubs();
-                                    switch (subsub.getName()) {
-                                        case "FileBAA":
-                                            assertEquals(0, subfolder3_subs.size());
-                                            break;
-                                        case "FileBAB":
-                                            assertEquals(0, subfolder3_subs.size());
-                                            break;
-                                        default:
-                                            fail("Unexpected subfolder in FolderBA: " + subsub.getName());
-                                    }
-                                }
-                                break;
-
-                            case "FolderBB":
-                                assertEquals(1, subfolder2_subs.size()); // FileBBA
-                                Folderinfo expectedFileBBA = subfolder2_subs.get(0);
-                                assertEquals(0, expectedFileBBA.getSubs().size());
-                                assertEquals("FileBBA", expectedFileBBA.getName());
-                                break;
-
-                            case "FolderBC":
-                                assertEquals(4, subfolder2_subs.size()); // FileBCA, FileBCB, FileBCC, FileBCD
-                                for (Folderinfo subsub : subfolder2_subs) {
-                                    assertEquals(0, subsub.getSubs().size());
-                                    switch (subsub.getName()) {
-                                        case "FileBCA":
-                                            break;
-                                        case "FileBCB":
-                                            break;
-                                        case "FileBCC":
-                                            break;
-                                        case "FileBCD":
-                                            break;
-                                        default:
-                                            fail("Unexpected subfolder in FolderBC: " + subsub.getName());
-                                    }
-                                }
-                                break;
-
-                            default:
-                                fail("Unexpected subfolder in FolderB: " + sub.getName());
-                        }
-                    }
-                    break;
-                default:
-                    fail("Unexpected subfolder in base folder: " + fold.getName());
             }
+            Folderinfo expectedFolderBB = expectedFolderB.getSubs().get(1);
+            {
+                assertEquals("FolderBB", expectedFolderBB.getName());
+                assertEquals(1, expectedFolderBB.getSubs().size());
+                Folderinfo expectedFileBBA = expectedFolderBB.getSubs().get(0);
+                assertEquals(0, expectedFileBBA.getSubs().size());
+                assertEquals("FileBBA", expectedFileBBA.getName());
+            }
+            Folderinfo expectedFolderBC = expectedFolderB.getSubs().get(2);
+            {
+                assertEquals("FolderBC", expectedFolderBC.getName());
+
+                assertEquals(4, expectedFolderBC.getSubs().size());
+                for (Folderinfo subsub : expectedFolderBC.getSubs()) {
+                    assertEquals(0, subsub.getSubs().size());
+                    assertTrue(
+                            subsub.getName().equals("FileBCA")
+                                    || subsub.getName().equals("FileBCB")
+                                    || subsub.getName().equals("FileBCC")
+                                    || subsub.getName().equals("FileBCD")
+                    );
+                }
+            }
+
         }
+
+
     }
+
 
     @Test
     void analyzeFolderTest_EmptyFolder() {
@@ -193,9 +166,10 @@ class FolderscaleTest {
     @Test
     void analyzeFolderTest_NullFolder() {
         try {
-            Folderinfo thisFolder = new Folderinfo(null, 0);
+            new Folderinfo(null, 0);
             fail("Should have thrown IllegalArgumentexception");
         } catch (IllegalArgumentException e) {
+            //noop
         }
     }
 

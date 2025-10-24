@@ -29,11 +29,6 @@ public class FolderscaleDummyForTest extends Folderscale{
     }
 
     @Override
-    protected int getTextFromGuiMinsizefield() { //Will probably be redundant and removed soon
-        return 0;
-    }
-
-    @Override
     protected void drawTheResult() {
         //noop
     }

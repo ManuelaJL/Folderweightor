@@ -5,7 +5,6 @@ import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.GridLayout;
 import java.awt.TextField;
 import java.io.File;
 import java.util.Comparator;
@@ -106,7 +105,6 @@ public class Folderscale {
     public static ScaleCanvas myCanvas;
     static JFrame F;
     static TextField fieldForFolder;
-    static TextField fieldForSize;
     static long starttime;
     static long stoptime;
     static int debugLevel = 1; //the higher, the more debugs
@@ -114,11 +112,9 @@ public class Folderscale {
     //1 = basic framework
     //5 = absolutely freaking everything
 
-    static int minsize = 0; //A file/folder must be at least this big for the program to analyze/show it
-    //TODO: minsize is pretty useless right now, cause we don't know how big a folder is before we measure it.
     public static Folderinfo thisFolder;  //a tree-like construct with names and sizes of subfolders
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         Folderscale thisProgram = new Folderscale();
         thisProgram.operate();
     }
@@ -142,7 +138,7 @@ public class Folderscale {
 
         // Oben die Kn�pfe:
         JPanel top = new JPanel(new BorderLayout());
-        JPanel topleft = new JPanel(new GridLayout(2, 1));
+        JPanel topleft = new JPanel();
         JPanel topright = new JPanel();
 
         topleft.setMinimumSize(new Dimension(800, 800));
@@ -153,38 +149,27 @@ public class Folderscale {
         GridBagConstraints cst = new GridBagConstraints();
 
         JPanel folderPanel = new JPanel();
-        JPanel sizePanel = new JPanel();
         cst.gridx = 0;
         cst.gridy = 0;
         topleft.add(folderPanel, cst);
         cst.gridx = 0;
         cst.gridy = 1;
-        topleft.add(sizePanel, cst);
 
 
         JLabel folderLabel = new JLabel("Enter Folder");
-        JLabel sizeLabel = new JLabel("Min size");
         folderPanel.add(folderLabel);
-        sizePanel.add(sizeLabel);
 
         fieldForFolder = new TextField("D:\\", 30);
-        fieldForSize = new TextField("0", 30);
         cst.fill = GridBagConstraints.VERTICAL;
         cst.ipady = 30;
         folderPanel.add(fieldForFolder, cst);
-        sizePanel.add(fieldForSize, cst);
-        //inputShape(fieldForFolder.getText(),fieldForSize.getText());
 
         Button btn = new Button("Draw");
         topright.add(btn);
 
         btn.addActionListener(e -> processInput());
 
-//        folderPanel.setBackground(Color.blue);
         folderPanel.setMaximumSize(F.getMaximumSize());
-
-//        sizePanel.setBackground(Color.green);
-//        topright.setBackground(Color.red);
 
         F.add("North", top);
 
@@ -278,8 +263,6 @@ public class Folderscale {
         String input = getTextFromGuiFolderfield();
         say("Input name: " + input);
         File folder = new File(input);
-        minsize = getTextFromGuiMinsizefield();
-        say("Minimum size: " + minsize, 3);
         if (!folder.exists()) {
             say(input + " : This file doesn't exist");
             //TODO: proper error message
@@ -332,10 +315,6 @@ public class Folderscale {
         stoptime = System.currentTimeMillis();
         System.out.println("Done drawing. That took " + (stoptime - starttime) + ".");
         starttime = System.currentTimeMillis();
-    }
-
-    protected int getTextFromGuiMinsizefield() { //TODO: might be obsolete soon anyway
-        return Integer.parseInt(fieldForSize.getText());
     }
 
     protected String getTextFromGuiFolderfield() {

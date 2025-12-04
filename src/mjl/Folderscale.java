@@ -169,6 +169,7 @@ public class Folderscale {
         folderPanel.setMaximumSize(F.getMaximumSize());
 
         F.add("North", top);
+        F.add("Center", myCanvas);
 
         F.setVisible(true);
     }
@@ -302,14 +303,13 @@ public class Folderscale {
 
             drawTheResult();
         }
-        //}
     }
 
     protected void drawTheResult() {
         myCanvas.thisFolder = thisFolder;
-        F.add("Center", myCanvas);
 
         stoptime = System.currentTimeMillis();
+        myCanvas.repaint();
         System.out.println("Done drawing. That took " + (stoptime - starttime) + ".");
         starttime = System.currentTimeMillis();
     }

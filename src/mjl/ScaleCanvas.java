@@ -16,7 +16,10 @@ class ScaleCanvas extends Canvas {
     int x_offset = 5;
 
 
-    public ScaleCanvas(Folderinfo input) {
+    public ScaleCanvas() {
+    }
+
+    public void setFolder(Folderinfo input){
         thisFolder = input;
     }
 

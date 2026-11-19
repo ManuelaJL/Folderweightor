@@ -115,12 +115,7 @@ public class Folderscale {
 
     public static Folderinfo thisFolder;  //a tree-like construct with names and sizes of subfolders
 
-    public static void main(String[] args) {
-        Folderscale thisProgram = new Folderscale();
-        thisProgram.operate();
-    }
-
-    private void operate() {
+    void setUpGui() {
         F = new JFrame();
         F.setTitle("Folder scale");
         F.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -131,7 +126,7 @@ public class Folderscale {
         F.setLayout(new BorderLayout());
 
         say("rein in ScaleCanvas", 5);
-        myCanvas = new ScaleCanvas(thisFolder);
+        myCanvas = new ScaleCanvas();
 
         // Oben die Kn�pfe:
         JPanel top = new JPanel(new BorderLayout());
@@ -164,7 +159,7 @@ public class Folderscale {
         Button btn = new Button("Draw");
         topright.add(btn);
 
-        btn.addActionListener(e -> processInput());
+        btn.addActionListener(e -> getInputFromGuiAndDrawResult());
 
         folderPanel.setMaximumSize(F.getMaximumSize());
 
@@ -175,138 +170,21 @@ public class Folderscale {
     }
 
 
-    /*
-     * Similar to folderSize, but does a bit more
-     * Fill the info of all of folder's subfolders into Folderinfos
-     */
-    public long analyzeFolder(Folderinfo folder) {
-        if (folder == null) {
-            System.err.println("folder is null!");
-            return 0;
-        } else if (folder.path == null) {
-            System.err.println("folder.path is null!");
-            return 0;
-        } else if (folder.path.listFiles() == null) {
-            System.err.println("folder.path.listFiles() is null for " + folder.path.toString());
-            return 0;
-        }
-        if (folder.path.listFiles() == null) { //TODO: no output in GUI, so if not debugging, won't know it was skipped. Check if the problem is that you don't have admin access.
-            System.err.println("Something doesn't work with this folder, so skipping it: " + folder.path);
-            return 0;
-        }
-
-        //thisFolder = new java.Folderinfo(folder);
-        say("java.Folderscale/analyzeFolder: " + folder.getName(), 2);
-
-        Folderinfo newguy; // = new java.Folderinfo(folder.path.getAbsoluteFile());
-
-        long length = 0;
-        long additionalLength;
-
-        File[] filesInFolder = folder.path.listFiles();
-        for (File file : filesInFolder) {
-            if (file.getName().equals("I AM YOUR GOD") || file.getName().contains("System Volume Information")
-                    || file.getName().equals("RtBackup") || file.getName().contains("$RECYCLE.BIN") || file.getName().contains("$Recycle.Bin")
-                    || file.getName().equals("Windows Defender Advanced Threat Protection")
-                    || file.getName().contains("Lenovo\\Vantage")
-                    || file.getName().contains("ProgramData\\Microsoft")
-                    || file.getName().contains("All Users\\Microsoft")
-                    || file.getName().contains("Windows\\System")
-                    || file.getName().startsWith(".")) continue;
-
-
-            additionalLength = 0;
-            newguy = new Folderinfo(file.getAbsoluteFile(), debugLevel);
-
-            if (!file.isDirectory()) {
-                say("This is a file", 4);
-                say("Length of " + folder.getName() + " was previously " + length + ", now I add " + newguy.getName() + " via analyzeFolder"
-                        + ", whose length is " + file.length(), 7);
-                length += file.length();
-                newguy.setSize(file.length());
-                folder.addSubfolder(newguy);
-            } else {
-                //if(folderSize(file)>=minsize){ //potentially silly, cause now we measure the size twice
-                say("This is a folder", 4);
-                //say("Length of " + folder.getName() + " was previously " + length + ", now I add " + newguy.getName() + " via analyzeFolder", 5);
-                additionalLength = analyzeFolder(newguy); //inside, subfolders are added
-                length += additionalLength;
-                //say("Done analyzing him. Length is now " + length, 5);
-                newguy.setSize(additionalLength);
-                folder.addSubfolder(newguy);
-            }
-
-        }
-        //say("end of java.Folderscale/analyzeFolder. Returning length=" + length + " to folder " + folder.getName(), 3);
-        say("==================Sorting subfolders of " + folder.getName() + ". Before sorting, they are: ", 4);
-//	    say(folder.getSubs().toString(), 4);
-
-        starttime = System.currentTimeMillis();
-
-        folder.getSubs().sort(Comparator.comparing(Folderinfo::getSize).reversed());
-
-        stoptime = System.currentTimeMillis();
-
-        say("After sorting, they are: ", 4);
-//	    say(folder.getSubs().toString(), 4);
-
-        say("Time taken to sort " + folder.getName() + ": " + (stoptime - starttime) + ".", 4);
-
-        return length;
-    }
 
     //To find what the paths are: File.listRoots();
-    public void processInput() {
+    public void getInputFromGuiAndDrawResult() {
         say("Getting the input", 5);
         String input = getTextFromGuiFolderfield();
         say("Input name: " + input);
-        File folder = new File(input);
-        if (!folder.exists()) {
-            say(input + " : This file doesn't exist");
-            //TODO: candidate for error message in GUI
-        } else {
-            long totalsize;
+        Folderinfo resultingFolder = new Backend().processInputInBackend(input);
+        if (resultingFolder==null) return;
+        drawTheResult(resultingFolder);
 
-            if (folder.isDirectory()) {
-                thisFolder = new Folderinfo(folder, debugLevel);
-
-                stoptime = System.currentTimeMillis();
-                System.out.println("After " + (stoptime - starttime) + ", beginning to analyze Folder");
-                starttime = System.currentTimeMillis();
-
-                thisFolder.setSize(analyzeFolder(thisFolder)); //inside, subfolders are added
-
-                stoptime = System.currentTimeMillis();
-                System.out.println("Done. Analyzing took " + (stoptime - starttime) + ".");
-                starttime = System.currentTimeMillis();
-
-
-            } else { //if it's a single file, not a directory
-                totalsize = folder.length();
-                output("Size: " + totalsize);
-            }
-
-            //System.out.println("\n\n\n");
-            //thisFolder.printThis("");
-
-            stoptime = System.currentTimeMillis();
-            System.out.println("Done. Analyzing took " + (stoptime - starttime) + ".");
-            starttime = System.currentTimeMillis();
-
-            //System.out.println("Done finding sizes. Next: Percentages");
-            thisFolder.findTotalPercentages(thisFolder.getSize());
-            System.out.println("Done doing percentages");
-
-            stoptime = System.currentTimeMillis();
-            System.out.println("Done with percentages. It took " + (stoptime - starttime) + ".");
-            starttime = System.currentTimeMillis();
-
-            drawTheResult();
-        }
     }
 
-    protected void drawTheResult() {
-        myCanvas.thisFolder = thisFolder;
+
+    protected void drawTheResult(Folderinfo thisFolder) {
+        myCanvas.setFolder(thisFolder);
 
         stoptime = System.currentTimeMillis();
         myCanvas.repaint();

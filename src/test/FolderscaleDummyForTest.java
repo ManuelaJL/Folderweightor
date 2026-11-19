@@ -1,4 +1,5 @@
 package test;
+import mjl.Folderinfo;
 import mjl.Folderscale;
 
 public class FolderscaleDummyForTest extends Folderscale{
@@ -29,7 +30,7 @@ public class FolderscaleDummyForTest extends Folderscale{
     }
 
     @Override
-    protected void drawTheResult() {
+    protected void drawTheResult(Folderinfo input) {
         //noop
     }
 }

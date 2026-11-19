@@ -3,7 +3,6 @@ package mjl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import test.FolderscaleDummyForTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,14 +13,14 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FolderscaleTest {
+class BackendTest {
     static String TEST_DIRECTORY = ".\\\\src\\\\test";
     static String CREATED_TEST_FOLDER = "folderToAnalyze";
-    Folderscale testedEntity;
+    Backend testedEntity;
 
     @BeforeEach
     void setUp() {
-        testedEntity = new FolderscaleDummyForTest();
+        testedEntity = new Backend();
         createTestfolders();
     }
 

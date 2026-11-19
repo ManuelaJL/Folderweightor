@@ -1,4 +1,7 @@
-package mjl;
+package mjl.folderw.frontend.awtswing;
+
+import mjl.folderw.backend.Backend;
+import mjl.folderw.model.Folderinfo;
 
 import java.awt.BorderLayout;
 
@@ -6,8 +9,6 @@ import java.awt.Button;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.TextField;
-import java.io.File;
-import java.util.Comparator;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -115,7 +116,7 @@ public class Folderscale {
 
     public static Folderinfo thisFolder;  //a tree-like construct with names and sizes of subfolders
 
-    void setUpGui() {
+    public void setUpGui() {
         F = new JFrame();
         F.setTitle("Folder scale");
         F.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

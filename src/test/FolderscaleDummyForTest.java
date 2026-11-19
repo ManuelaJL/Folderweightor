@@ -1,6 +1,6 @@
 package test;
-import mjl.Folderinfo;
-import mjl.Folderscale;
+import mjl.folderw.model.Folderinfo;
+import mjl.folderw.frontend.awtswing.Folderscale;
 
 public class FolderscaleDummyForTest extends Folderscale{
     String outputMessages = "";

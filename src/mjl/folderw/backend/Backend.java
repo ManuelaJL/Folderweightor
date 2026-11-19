@@ -1,4 +1,6 @@
-package mjl;
+package mjl.folderw.backend;
+
+import mjl.folderw.model.Folderinfo;
 
 import java.io.File;
 import java.util.Comparator;
@@ -19,7 +21,7 @@ public class Backend {
         if (debugLevel >= minDebugLevToPrint)
             System.out.println(output);
     }
-    protected Folderinfo processInputInBackend(String input) {  //move this to backend-class
+    public Folderinfo processInputInBackend(String input) {  //move this to backend-class
         File folder = new File(input);
         if (!folder.exists()) {
             say(input + " : This file doesn't exist");

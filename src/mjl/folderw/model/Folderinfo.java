@@ -1,4 +1,4 @@
-package mjl;
+package mjl.folderw.model;
 
 import java.io.File;
 import java.util.ArrayList;

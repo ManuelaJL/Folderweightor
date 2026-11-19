@@ -1,5 +1,6 @@
-package mjl;
+package mjl.folderw.backend;
 
+import mjl.folderw.model.Folderinfo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

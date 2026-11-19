@@ -1,4 +1,6 @@
-package mjl;
+package mjl.folderw.frontend.awtswing;
+
+import mjl.folderw.model.Folderinfo;
 
 import java.awt.*;
 import java.text.DecimalFormat;
